@@ -18,6 +18,7 @@
 (define-constant ERR_INVALID_STREAM_ID (err u3))
 
 ;; data vars
+;;latest stream id to keep track of the latest streams
 (define-data-var latest-stream-id uint u0)
 
 ;; data maps
@@ -32,7 +33,32 @@
     timeframe: (tuple (start-block uint) (stop-block uint)) })
 
 ;; public functions
-;;
+;;function for the new stream
+(define-public (stream-to
+    (recipient principal)
+    (initial-balance uint)
+    (timeframe (tuple (start-block uint) (stop-block uint)))
+    (payment-per-block uint)
+    )
+    (let (
+      (stream {
+        sender: contract-caller,
+        recipient: recipient,
+        balance: initial-balance,
+        withdrawn-balance: u0,
+        payment-per-block: payment-per-block,
+        timeframe: timeframe
+      })
+      (current-stream-id (var-get latest-stream-id))
+      ) 
+      ;;the 'stx-transfer' fnc takes in (amount sender recipient)
+      ;;replacing the 'recipient' to "as-contract tx-sender" since as-contract switches the tx-sender variable to the contract principal
+      ;;i.e doing this gives us the contract address itself
+      (try! (stx-transfer? initial-balance contract-caller (as-contract tx-sender)))
+      (map-set streams current-stream-id stream)
+      (var-set latest-stream-id (+ current-stream-id u1))
+      (ok current-stream-id)
+      )) 
 
 ;; read only functions
 ;;
