@@ -60,6 +60,23 @@
       (ok current-stream-id)
       )) 
 
+      ;;function to refuel the tokens for a stream already created 
+      (define-public (refuel 
+        (stream-id uint)
+        (amount uint)
+        )
+        (let (
+          (stream (unwrap! (map-get? streams stream-id) ERR_INVALID_STREAM_ID))
+          )
+          (asserts! (is-eq contract-caller (get sender stream)) ERR_UNAUTHORIZED)
+          (try! (stx-transfer? amount contract-caller (as-contract tx-sender)))
+          (map-set streams stream-id 
+          (merge stream {balance: (+ (get balance stream) amount)})
+          )
+          (ok amount)
+          )
+        )
+
 ;; read only functions
 ;;
 
