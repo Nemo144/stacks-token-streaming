@@ -78,7 +78,31 @@
         )
 
 ;; read only functions
-;;
+;;to calculate how many blocks have passed since the starting block of a stream
+(define-read-only (calculate-block-delta
+   (timeframe (tuple (start-block uint) (stop-block uint)))
+   )
+   (let (
+    (start-block (get start-block timeframe))
+    (stop-block (get stop-block timeframe))
+
+    (delta
+     (if (<= block-height start-block)
+       ;;then
+       u0
+       ;;else
+       (if (< block-height stop-block)
+        ;;then
+        (- block-height start-block)
+         ;;else
+        (- stop-block start-block)
+       )
+     )
+     )
+    )
+    delta
+   )
+   )
 
 ;; private functions
 ;;
