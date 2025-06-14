@@ -82,7 +82,7 @@
    (stream-id uint)
    )
    (let (
-    (stream (unwrap! (map-get? streams stream-id)ERR_INVALID_STREAM_ID))
+    (stream (unwrap! (map-get? streams stream-id) ERR_INVALID_STREAM_ID))
     (balance (balance-of stream-id contract-caller))
    )
    (asserts! (is-eq contract-caller (get recipient stream)) ERR_UNAUTHORIZED)
@@ -93,6 +93,25 @@
      (ok balance)
    )
    )
+
+   ;;withdraw excess locked tokens
+   (define-public (refund
+      (stream-id uint)
+      )
+      (let (
+        (stream (unwrap! (map-get? streams stream-id) ERR_INVALID_STREAM_ID ))
+        (balance (balance-of stream-id (get sender stream)))
+      )
+      (asserts! (is-eq contract-caller (get sender stream)) ERR_UNAUTHORIZED)
+      (asserts! (< (get stop-block (get timeframe stream)) block-height) ERR_STREAM_STILL_ACTIVE)
+      (map-set streams stream-id  (merge stream {
+        balance: (- (get balance stream) balance),
+      }
+      ))
+      (try! (as-contract (stx-transfer? balance tx-sender (get sender stream))))
+      (ok balance)
+      )
+      )
 
 ;; read only functions
 ;;to calculate how many blocks have passed since the starting block of a stream
