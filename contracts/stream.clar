@@ -104,6 +104,26 @@
    )
    )
 
+   ;;to check the withdrawable balance for a party involved in a stream
+   (define-read-only (balance-of
+      (stream-id uint)
+      (who principal)
+      ) 
+      (let (
+        (stream (unwrap! (map-get? streams stream-id) u0))
+        (block-delta (calculate-block-delta (get timeframe stream)))
+        (recipient-balance (* block-delta (get payment-per-block stream)))
+      )
+        (if (is-eq who (get recipient stream)) 
+        (- recipient-balance (get withdrawn-balance stream)) 
+        (if (is-eq who (get sender stream)) 
+          (- (get balance stream) recipient-balance)
+          u0
+      )
+      )
+      )
+      )
+
 ;; private functions
 ;;
 
