@@ -77,6 +77,23 @@
           )
         )
 
+;;withdraw received tokens
+(define-public (withdraw 
+   (stream-id uint)
+   )
+   (let (
+    (stream (unwrap! (map-get? streams stream-id)ERR_INVALID_STREAM_ID))
+    (balance (balance-of stream-id contract-caller))
+   )
+   (asserts! (is-eq contract-caller (get recipient stream)) ERR_UNAUTHORIZED)
+   (map-set streams stream-id 
+     (merge stream {withdrawn-balance: (+ (get withdrawn-balance stream) balance)})
+     )
+     (try! (as-contract (stx-transfer? balance tx-sender (get recipient stream))))
+     (ok balance)
+   )
+   )
+
 ;; read only functions
 ;;to calculate how many blocks have passed since the starting block of a stream
 (define-read-only (calculate-block-delta
