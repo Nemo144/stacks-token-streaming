@@ -175,6 +175,15 @@
            )
       )
 
+      ;;signature verification
+      (define-read-only (validate-signature (hash (buff 32)) (signature (buff 65))
+      (signer principal))
+          (is-eq 
+            (principal-of? (unwrap! (secp256k1-recover? hash signature) false)) 
+            (ok signer)
+            )
+      )
+
 ;; private functions
 ;;
 
