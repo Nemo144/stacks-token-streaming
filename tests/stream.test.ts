@@ -34,3 +34,8 @@ describe("test token streaming contract", () => {
     expect(result.events[0].data.sender).toBe(sender);
   });
 });
+
+it("ensures contract is initialized properly and stream is created", () => {
+  const latestStreamId = simnet.getDataVar("stream", "latest-stream-id");
+  expect(latestStreamId).toEqual(Cl.uint(1));
+});
