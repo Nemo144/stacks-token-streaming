@@ -12,6 +12,11 @@ epoch = 2.5
 [repl.analysis]
 passes = ['check_checker']
 
+[deployment]
+[deployment.testnet]
+[deployment.testnet.stream]
+fee = 8000
+
 [repl.analysis.check_checker]
 strict = false
 trusted_sender = false
