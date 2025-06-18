@@ -123,7 +123,24 @@ it("signature verification can be done on stream hashes", () => {
     sender
   );
 
-  const hashAsHex = Buffer.from(hashedStream0.result.buffer).toString("hex");
-  console.log("Type:", hashedStream0.result.type);
-  // console.log('Value:', hashedStream0.result.value);
+  const bufferValue = hashedStream0.result as any;
+  const hashAsHex = Buffer.from(bufferValue.buffer).toString("hex");
+  const signature = signMessageHashRsv({
+    messageHash: hashAsHex,
+    privateKey: createStacksPrivateKey(
+      "7287ba251d44a4d3fd9276c88ce34c5c52a038955511cccaf77e61068649c17801"
+    ),
+  });
+
+  const verifySignature = simnet.callReadOnlyFn(
+    "stream",
+    "validate-signature",
+    [
+      Cl.buffer(bufferValue.buffer),
+      Cl.bufferFromHex(signature.data),
+      Cl.principal(sender),
+    ],
+    sender
+  );
+  expect(cvToValue(verifySignature.result)).toBe(true);
 });
