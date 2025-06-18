@@ -38,4 +38,21 @@ describe("test token streaming contract", () => {
 it("ensures contract is initialized properly and stream is created", () => {
   const latestStreamId = simnet.getDataVar("stream", "latest-stream-id");
   expect(latestStreamId).toEqual(Cl.uint(1));
+
+  const createdStream = simnet.getMapEntry("stream", "streams", Cl.uint(0));
+  expect(createdStream).toEqual(
+    Cl.some(
+      Cl.tuple({
+        sender: Cl.principal(sender),
+        recipient: Cl.principal(recipient),
+        balance: Cl.uint(5),
+        "withdrawn-balance": Cl.uint(0),
+        "payment-per-block": Cl.uint(1),
+        timeframe: Cl.tuple({
+          "start-block": Cl.uint(0),
+          "stop-block": Cl.uint(5),
+        }),
+      })
+    )
+  );
 });
