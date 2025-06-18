@@ -92,3 +92,21 @@ it("ensures non-recipient cannot withdraw tokens from stream", () => {
   );
   expect(withdraw.result).toEqual(Cl.error(Cl.uint(0)));
 });
+
+it("ensures sender can withdraw excess tokens", () => {
+  //Block 3
+  simnet.callPublicFn("stream", "refuel", [Cl.uint(0), Cl.uint(5)], sender);
+
+  //Block 4 and 5
+  simnet.mineEmptyBlock();
+  simnet.mineEmptyBlock();
+
+  //claim tokens
+  simnet.callPublicFn("stream", "refuel", [Cl.uint(0)], recipient);
+
+  //withdraw excess
+  const refund = simnet.callPublicFn("stream", "refund", [Cl.uint(0)], sender);
+  expect(refund.events[0].event).toBe("stx_transfer_event");
+  expect(refund.events[0].data.amount).toBe("5");
+  expect(refund.events[0].data.recipient).toBe(sender);
+});
