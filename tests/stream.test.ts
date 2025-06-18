@@ -56,3 +56,13 @@ it("ensures contract is initialized properly and stream is created", () => {
     )
   );
 });
+
+it("ensures stream cannot be refueled by random address", () => {
+  const result = simnet.callPublicFn(
+    "stream",
+    "refuel",
+    [Cl.uint(0), Cl.uint(5)],
+    randomUser
+  );
+  expect(result.result).toEqual(Cl.error(Cl.uint(0)));
+});
