@@ -110,3 +110,20 @@ it("ensures sender can withdraw excess tokens", () => {
   expect(refund.events[0].data.amount).toBe("5");
   expect(refund.events[0].data.recipient).toBe(sender);
 });
+
+it("signature verification can be done on stream hashes", () => {
+  const hashedStream0 = simnet.callReadOnlyFn(
+    "stream",
+    "hash-stream",
+    [
+      Cl.uint(0),
+      Cl.uint(0),
+      Cl.tuple({ "start-block": Cl.uint(1), "stop-block": Cl.uint(2) }),
+    ],
+    sender
+  );
+
+  const hashAsHex = Buffer.from(hashedStream0.result.buffer).toString("hex");
+  console.log("Type:", hashedStream0.result.type);
+  // console.log('Value:', hashedStream0.result.value);
+});
