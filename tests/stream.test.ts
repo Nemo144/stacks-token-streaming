@@ -82,3 +82,13 @@ it("ensures recipient can withdraw tokens over time", () => {
   expect(withdraw.events[0].data.amount).toBe("3");
   expect(withdraw.events[0].data.recipient).toBe(recipient);
 });
+
+it("ensures non-recipient cannot withdraw tokens from stream", () => {
+  const withdraw = simnet.callPublicFn(
+    "stream",
+    "withdraw",
+    [Cl.uint(0)],
+    randomUser
+  );
+  expect(withdraw.result).toEqual(Cl.error(Cl.uint(0)));
+});
