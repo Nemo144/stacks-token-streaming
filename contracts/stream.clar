@@ -1,8 +1,8 @@
 
 ;; title: stream
 ;; version:
-;; summary:
-;; description:
+;; summary: Token-streaming protocol
+;; description: Establishing a continuous payment stream between two parties 
 
 ;; traits
 ;;
