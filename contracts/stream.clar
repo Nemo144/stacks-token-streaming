@@ -12,10 +12,10 @@
 
 ;; constants
 ;;error codes
-(define-constant ERR_UNAUTHORIZED (err u0))
-(define-constant ERR_INVALID_SIGNATURE (err u1))
-(define-constant ERR_STREAM_STILL_ACTIVE (err u2))
-(define-constant ERR_INVALID_STREAM_ID (err u3))
+(define-constant ERR_UNAUTHORIZED (err u0)) ;;tries to withdraw from a stream where there are not the recipient 
+(define-constant ERR_INVALID_SIGNATURE (err u1)) ;;provides an invalid signature while updating the stream 
+(define-constant ERR_STREAM_STILL_ACTIVE (err u2)) ;;tries to withdraw tokens not yet withdrawn by the recipient before the final block has been hit
+(define-constant ERR_INVALID_STREAM_ID (err u3)) ;;tries to refuel token without proper stream id 
 
 ;; data vars
 ;;latest stream id to keep track of the latest streams
