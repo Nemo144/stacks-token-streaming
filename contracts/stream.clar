@@ -22,6 +22,7 @@
 (define-data-var latest-stream-id uint u0)
 
 ;; data maps
+;;creating a stream requires 
 ;;streams mapping
 (define-map streams 
   uint ;;stream id
