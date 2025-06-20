@@ -50,6 +50,7 @@
         payment-per-block: payment-per-block,
         timeframe: timeframe
       })
+      ;;temporary variable = current-stream-id which is just the value of our latest-stream-id data variable
       (current-stream-id (var-get latest-stream-id))
       ) 
       ;;the 'stx-transfer' fnc takes in (amount sender recipient)
