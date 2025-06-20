@@ -78,7 +78,7 @@
           (try! (stx-transfer? amount contract-caller (as-contract tx-sender)))
 
           ;;update the mapping for the given stream-id to have an updated balance
-          ;;by merging the existing stream tuple with a new tuole that has an updated balance
+          ;;by merging the existing stream tuple with a new tuple that has an updated balance
           (map-set streams stream-id 
           (merge stream {balance: (+ (get balance stream) amount)})
           )
@@ -88,41 +88,41 @@
           )
         )
 
-;;withdraw received tokens
-(define-public (withdraw 
-   (stream-id uint)
-   )
-   (let (
-    (stream (unwrap! (map-get? streams stream-id) ERR_INVALID_STREAM_ID))
-    (balance (balance-of stream-id contract-caller))
-   )
-   (asserts! (is-eq contract-caller (get recipient stream)) ERR_UNAUTHORIZED)
-   (map-set streams stream-id 
-     (merge stream {withdrawn-balance: (+ (get withdrawn-balance stream) balance)})
-     )
-     (try! (as-contract (stx-transfer? balance tx-sender (get recipient stream))))
-     (ok balance)
-   )
-   )
+        ;;withdraw received tokens
+        (define-public (withdraw 
+          (stream-id uint)
+          )
+          (let (
+            (stream (unwrap! (map-get? streams stream-id) ERR_INVALID_STREAM_ID))
+            (balance (balance-of stream-id contract-caller))
+          )
+          (asserts! (is-eq contract-caller (get recipient stream)) ERR_UNAUTHORIZED)
+          (map-set streams stream-id 
+            (merge stream {withdrawn-balance: (+ (get withdrawn-balance stream) balance)})
+            )
+            (try! (as-contract (stx-transfer? balance tx-sender (get recipient stream))))
+            (ok balance)
+          )
+          )
 
-   ;;withdraw excess locked tokens
-   (define-public (refund
-      (stream-id uint)
-      )
-      (let (
-        (stream (unwrap! (map-get? streams stream-id) ERR_INVALID_STREAM_ID ))
-        (balance (balance-of stream-id (get sender stream)))
-      )
-      (asserts! (is-eq contract-caller (get sender stream)) ERR_UNAUTHORIZED)
-      (asserts! (< (get stop-block (get timeframe stream)) block-height) ERR_STREAM_STILL_ACTIVE)
-      (map-set streams stream-id  (merge stream {
-        balance: (- (get balance stream) balance),
-      }
-      ))
-      (try! (as-contract (stx-transfer? balance tx-sender (get sender stream))))
-      (ok balance)
-      )
-      )
+        ;;withdraw excess locked tokens
+        (define-public (refund
+            (stream-id uint)
+            )
+            (let (
+              (stream (unwrap! (map-get? streams stream-id) ERR_INVALID_STREAM_ID ))
+              (balance (balance-of stream-id (get sender stream)))
+            )
+            (asserts! (is-eq contract-caller (get sender stream)) ERR_UNAUTHORIZED)
+            (asserts! (< (get stop-block (get timeframe stream)) block-height) ERR_STREAM_STILL_ACTIVE)
+            (map-set streams stream-id  (merge stream {
+              balance: (- (get balance stream) balance),
+            }
+            ))
+            (try! (as-contract (stx-transfer? balance tx-sender (get sender stream))))
+            (ok balance)
+            )
+            )
 
       ;;update stream configuration
       (define-public (update-details 
@@ -162,13 +162,13 @@
 
     (delta
      (if (<= block-height start-block)
-       ;;then
+       ;;then stream is not active yet and 0 is returned
        u0
        ;;else
        (if (< block-height stop-block)
-        ;;then
+        ;;then the stream is active and not ended yet so return  block-height - start-block
         (- block-height start-block)
-         ;;else
+         ;;else the stream is now over and the full range i.e stop-block - start-block is returned
         (- stop-block start-block)
        )
      )
