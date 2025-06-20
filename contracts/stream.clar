@@ -68,13 +68,22 @@
         (amount uint)
         )
         (let (
+          ;;use the stream-id to fetch the actual stream tuple from the mapping
           (stream (unwrap! (map-get? streams stream-id) ERR_INVALID_STREAM_ID))
           )
+          ;;assert and make sure the contract caller is the sender of the stream
           (asserts! (is-eq contract-caller (get sender stream)) ERR_UNAUTHORIZED)
+
+          ;;transfer stx tokens from the sender to the contract principal's address
           (try! (stx-transfer? amount contract-caller (as-contract tx-sender)))
+
+          ;;update the mapping for the given stream-id to have an updated balance
+          ;;by merging the existing stream tuple with a new tuole that has an updated balance
           (map-set streams stream-id 
           (merge stream {balance: (+ (get balance stream) amount)})
           )
+
+          ;;return ok with the amount of token that was refueled
           (ok amount)
           )
         )
