@@ -18,7 +18,7 @@
 (define-constant ERR_INVALID_STREAM_ID (err u3)) ;;tries to refuel token without proper stream id 
 
 ;; data vars
-;;latest stream id to keep track of the latest streams
+;;latest stream id to keep track of the latest stream ID initially set to 0
 (define-data-var latest-stream-id uint u0)
 
 ;; data maps
