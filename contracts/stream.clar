@@ -178,7 +178,7 @@
    )
    )
 
-   ;;to check the withdrawable balance for a party involved in a stream
+   ;;to check the withdrawable balance for a party involved in a stream i.e either the sender or the recipient
    (define-read-only (balance-of
       (stream-id uint)
       (who principal)
