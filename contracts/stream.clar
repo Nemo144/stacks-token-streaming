@@ -107,7 +107,7 @@
 
         ;;withdraw excess locked tokens
         (define-public (refund
-            (stream-id uint)
+            (stream-id uint);;
             )
             (let (
               (stream (unwrap! (map-get? streams stream-id) ERR_INVALID_STREAM_ID ))
@@ -183,6 +183,7 @@
       (stream-id uint)
       (who principal)
       ) 
+      ;;getting the refrence of the actual stream 
       (let (
         (stream (unwrap! (map-get? streams stream-id) u0))
         (block-delta (calculate-block-delta (get timeframe stream)))
