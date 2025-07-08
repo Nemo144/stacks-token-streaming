@@ -93,13 +93,18 @@
           (stream-id uint)
           )
           (let (
+            ;;get a refrence on the actual stream based on the stream-id
             (stream (unwrap! (map-get? streams stream-id) ERR_INVALID_STREAM_ID))
+            ;;how much balance from this stream is pending for the contract-caller
             (balance (balance-of stream-id contract-caller))
           )
+          ;;assert that the contract-caller is the stream recipient otherwise throw the unathourized error
           (asserts! (is-eq contract-caller (get recipient stream)) ERR_UNAUTHORIZED)
+          ;;update mapping to increase the withdrawn-balance based on whatever balance is available for the recipient to withdraw
           (map-set streams stream-id 
             (merge stream {withdrawn-balance: (+ (get withdrawn-balance stream) balance)})
             )
+            ;;transfer balance amount of stx token from the contract to the stream recipient
             (try! (as-contract (stx-transfer? balance tx-sender (get recipient stream))))
             (ok balance)
           )
