@@ -183,14 +183,18 @@
       (stream-id uint)
       (who principal)
       ) 
-      ;;getting the refrence of the actual stream 
       (let (
+      ;;getting the refrence of the actual stream based on the id from the mapping 
         (stream (unwrap! (map-get? streams stream-id) u0))
+      ;;calculate the current block delta
         (block-delta (calculate-block-delta (get timeframe stream)))
+      ;;calculate how much tokens are withdrawable from the recipient
         (recipient-balance (* block-delta (get payment-per-block stream)))
       )
+      ;;checking for the balance of the recipient
         (if (is-eq who (get recipient stream)) 
         (- recipient-balance (get withdrawn-balance stream)) 
+        ;;checking for the balance of the sender
         (if (is-eq who (get sender stream)) 
           (- (get balance stream) recipient-balance)
           u0
