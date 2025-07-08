@@ -111,19 +111,25 @@
           )
 
         ;;withdraw excess locked tokens
+        ;;the refund function takes in a stream-id argument that is used to get a reference to the stream tuple from the mapping
         (define-public (refund
-            (stream-id uint);;
+            (stream-id uint)
             )
             (let (
               (stream (unwrap! (map-get? streams stream-id) ERR_INVALID_STREAM_ID ))
+              ;;calculate the balance for the stream sender
               (balance (balance-of stream-id (get sender stream)))
             )
+            ;;ensure the contract-caller is the stream sender
             (asserts! (is-eq contract-caller (get sender stream)) ERR_UNAUTHORIZED)
+            ;;ensure the stream is past the stop block
             (asserts! (< (get stop-block (get timeframe stream)) block-height) ERR_STREAM_STILL_ACTIVE)
+            ;;update our mapping to reduce the overall balance of the stream to be the previous balance minus whatever amount is being withdrawn
             (map-set streams stream-id  (merge stream {
               balance: (- (get balance stream) balance),
             }
             ))
+            ;;token transfer from our contract to the stream sender
             (try! (as-contract (stx-transfer? balance tx-sender (get sender stream))))
             (ok balance)
             )
