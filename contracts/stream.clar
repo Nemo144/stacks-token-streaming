@@ -221,10 +221,14 @@
            (new-timeframe (tuple (start-block uint) (stop-block uint)))
            )
            (let (
+           ;;getting the refrence of the actual stream based on the id from the mapping 
             (stream (unwrap! (map-get? streams stream-id) (sha256 0)))
+           ;;convert the stream tuple into a buffer using the "to-consensus-buff",Convert the new-payment-per-block to a Buffer and concatnate
+           ;;the three buffers to produce a temporary variable named msg
             (msg (concat (concat (unwrap-panic (to-consensus-buff? stream)) (unwrap-panic (to-consensus-buff? new-payment-per-block))) 
             (unwrap-panic (to-consensus-buff? new-timeframe))))
            )
+           ;;Do a SHA-256 hash over msg
            (sha256 msg)
            )
       )
