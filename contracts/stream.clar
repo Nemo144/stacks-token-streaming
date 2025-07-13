@@ -234,9 +234,14 @@
       )
 
       ;;signature verification
+      ;; the validate-signature takes on 3 params: he hash that was signed on, the resulting signature, and the expected signer address
       (define-read-only (validate-signature (hash (buff 32)) (signature (buff 65))
       (signer principal))
           (is-eq 
+          ;;Uses secp256k1-recover function to extract the public key that signed the hash if signature is valid. This function returns a response type ok or err
+          ;;We use unwrap! to either access the inner public key value if signature was valid, or return false otherwise
+          ;;If valid, we use principal-of? to get the address of the wallet associated with the public key
+          ;;Then we check if the address is equal to the expected signer address. If yes, we return true - otherwise it will return false
             (principal-of? (unwrap! (secp256k1-recover? hash signature) false)) 
             (ok signer)
             )
