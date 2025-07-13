@@ -144,20 +144,26 @@
           (signature (buff 65))
           )
           (let (
+            ;;uses the stream-id to get a reference to the actual stream tuple from the mapping
             (stream (unwrap! (map-get? streams stream-id) ERR_INVALID_STREAM_ID))
           )
+          ;;Ensures the signature is valid and was done by the provided signer principal address
             (asserts! (validate-signature (hash-stream stream-id payment-per-block timeframe) signature signer) ERR_INVALID_SIGNATURE)
+            ;;Ensures that one of the following is true: contract-caller is sender and signer is recipient OR, contract-caller is recipient and signer is sender
             (asserts! 
               (or 
                 (and (is-eq (get sender stream) contract-caller) (is-eq (get recipient stream) signer))
                  (and (is-eq (get sender stream) signer) (is-eq (get recipient stream) contract-caller))
                  )
+                 ;;If neither of the above are true, throw an UNAUTHORIZED error
                  ERR_UNAUTHORIZED
                  )
+                 ;;Update the mapping with the new payment-per-block and timeframe settings
                  (map-set streams stream-id (merge stream {
                    payment-per-block: payment-per-block,
                    timeframe: timeframe
                  }))
+                 ;;Return with a response ok and true
                  (ok true)
           )
           )
